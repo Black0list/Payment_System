@@ -19,4 +19,9 @@ class Wallet extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, ['sender_wallet', 'receiver_wallet']);
+    }
 }

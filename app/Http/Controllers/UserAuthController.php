@@ -17,15 +17,18 @@ class UserAuthController extends Controller
             'name'=>'required|string',
             'email'=>'required|string|email|unique:users',
             'password'=>'required|min:8',
+            'role'=>'required|string'
         ]);
 
-        $RoleExists = Role::whereRaw('LOWER(role_name) = ?', 'user')->exists();
+        $role = $registerUserData['role'];
+
+        $RoleExists = Role::whereRaw('LOWER(role_name) = ?', $role)->exists();
 
         if (!$RoleExists) {
-            $role = Role::create(['role_name' => 'user']);
+            $role = Role::create(['role_name' => $role]);
             $roleId = $role->id;
         } else {
-            $roleId = Role::whereRaw('LOWER(role_name) = ?', 'user')->first()->id;
+            $roleId = Role::whereRaw('LOWER(role_name) = ?', $role)->first()->id;
         }
 
         $user = User::create([
@@ -40,7 +43,7 @@ class UserAuthController extends Controller
         Wallet::create([
             'user_id' => $user->id,
             'serial' => strtoupper($randomString),
-            'amount' => 0,
+            'amount' => 0.00,
         ]);
 
         return response()->json([
@@ -67,6 +70,7 @@ class UserAuthController extends Controller
 
     public function logout(){
         auth()->user()->tokens()->delete();
+        //$request->user()->currentAccessToken()->delete();
 
         return response()->json([
             "message"=>"logged out"

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserAuthController;
@@ -18,7 +19,11 @@ use App\Http\Controllers\UserAuthController;
 
 Route::post('register',[UserAuthController::class,'register']);
 Route::post('login',[UserAuthController::class,'login']);
-Route::post('logout',[UserAuthController::class,'logout']);
-Route::post('/role/create', [RoleController::class, 'create'])
+Route::post('logout',[UserAuthController::class,'logout'])
     ->middleware('auth:sanctum');
-//Route::post('/role/create', [RoleController::class, 'create']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/role/create', [RoleController::class, 'create']);
+
+    Route::post('/transfer', [TransactionController::class, 'transfer']);
+});

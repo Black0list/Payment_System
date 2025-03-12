@@ -23,7 +23,17 @@ class Transaction extends Model
         return $this->hasOne(State::class);
     }
 
-    public function user()
+    public function sender()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function receiver()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function admin()
     {
         return $this->belongsTo(User::class);
     }
