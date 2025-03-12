@@ -1,66 +1,172 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# API Utilisateur et Transaction
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Cette API est construite avec **Laravel** et permet l'authentification des utilisateurs, la gestion des rôles et des transactions financières. Elle permet aux utilisateurs de s'inscrire, se connecter, et effectuer des transactions telles que des transferts d'argent, des dépôts et des annulations. L'API utilise **Laravel Sanctum** pour l'authentification basée sur des tokens.
 
-## About Laravel
+## Installation
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Étapes pour installer le projet
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. Clonez le repository dans votre répertoire local :
+   ```bash
+   git clone https://github.com/Black0list/Payment_System.git
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. Allez dans le répertoire du projet :
+   ```bash
+   cd Payment_System
+   ```
 
-## Learning Laravel
+3. Installez les dépendances via Composer :
+   ```bash
+   composer install
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4. Créez une copie du fichier `.env.example` et renommez-le en `.env` :
+   ```bash
+   cp .env.example .env
+   ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+5. Générez la clé d'application :
+   ```bash
+   php artisan key:generate
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+6. Configurez la base de données dans le fichier `.env`. Assurez-vous de bien indiquer les bonnes informations pour votre base de données (par exemple, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+7. Exécutez les migrations pour configurer la base de données :
+   ```bash
+   php artisan migrate
+   ```
 
-### Premium Partners
+8. Démarrez le serveur de développement :
+   ```bash
+   php artisan serve
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+> Votre API devrait maintenant être accessible à `http://127.0.0.1:8000`.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Points de terminaison API
 
-## Code of Conduct
+### 1. Points de terminaison d'authentification des utilisateurs
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### Inscription d'un nouvel utilisateur
 
-## Security Vulnerabilities
+**Endpoint**: `POST /api/register`  
+Permet d'enregistrer un nouvel utilisateur avec les informations suivantes :
+- `name` (obligatoire)
+- `email` (obligatoire, doit être unique)
+- `password` (obligatoire, minimum 8 caractères)
+- `role` (obligatoire)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+#### Connexion de l'utilisateur
 
-## License
+**Endpoint**: `POST /api/login`  
+Permet à un utilisateur de se connecter avec les informations suivantes :
+- `email` (obligatoire)
+- `password` (obligatoire)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### Déconnexion de l'utilisateur
+
+**Endpoint**: `POST /api/logout`  
+Permet à un utilisateur de se déconnecter (nécessite un token d'authentification valide via `auth:sanctum`).
+
+---
+
+### 2. Points de terminaison de gestion des transactions
+
+#### Transfert d'argent
+
+**Endpoint**: `POST /api/transfer`  
+Permet de transférer de l'argent d'un utilisateur à un autre. Les paramètres requis sont :
+- `receiver_email` (obligatoire) : l'email du destinataire.
+- `receiver_name` (obligatoire) : le nom du destinataire.
+- `amount` (obligatoire) : le montant à transférer.
+
+#### Annulation d'une transaction
+
+**Endpoint**: `POST /api/transaction/cancel`  
+Permet d'annuler une transaction en fournissant l'ID de la transaction.
+
+#### Dépôt d'argent
+
+**Endpoint**: `POST /api/transaction/deposit`  
+Permet à un utilisateur de déposer de l'argent sur son portefeuille en fournissant le montant à déposer.
+
+---
+
+## Exemple de requêtes
+
+### Inscription d'un utilisateur
+
+```bash
+POST /api/register
+{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123",
+    "role": "user"
+}
+```
+
+### Connexion d'un utilisateur
+
+```bash
+POST /api/login
+{
+    "email": "john@example.com",
+    "password": "password123"
+}
+```
+
+### Transfert d'argent
+
+```bash
+POST /api/transfer
+{
+    "receiver_email": "jane@example.com",
+    "receiver_name": "Jane Doe",
+    "amount": 50
+}
+```
+
+### Annulation de transaction
+
+```bash
+POST /api/transaction/cancel
+{
+    "transaction": "transaction_id_here"
+}
+```
+
+### Dépôt d'argent
+
+```bash
+POST /api/transaction/deposit
+{
+    "amount": 100
+}
+```
+
+---
+
+## Contribution
+
+Les contributions sont les bienvenues ! Pour proposer une modification, veuillez suivre les étapes suivantes :
+
+1. Forkez le projet.
+2. Créez une branche (`git checkout -b feature/nouvelle-fonctionnalité`).
+3. Faites vos modifications et committez (`git commit -am 'Ajout de nouvelle fonctionnalité'`).
+4. Poussez sur votre fork (`git push origin feature/nouvelle-fonctionnalité`).
+5. Ouvrez une Pull Request.
+
+---
+
+## 👨‍💻 Auteur
+
+Ce projet a été développé par **HADOUI ABDELKEBIR** (**Black0list**).  
+N'hésitez pas à me suivre sur GitHub et à contribuer ! 🚀
+
+📧 Contact : contact.abdelkebir@gmail.com
+🔗 GitHub : [Black0list](https://github.com/Black0list)
