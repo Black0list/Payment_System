@@ -32,7 +32,7 @@ class TransactionController extends Controller
         $receiver = User::where('email', $data['receiver_email'])->first();
         $name = $data['receiver_name'];
 
-        if($receiver->wallet->amount < $data['amount']){
+        if($sender->wallet->amount < $data['amount']){
             return [
                 'error' => 'Insufficient funds',
             ];
