@@ -24,6 +24,6 @@ Route::post('logout',[UserAuthController::class,'logout'])
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/role/create', [RoleController::class, 'create']);
-
+    Route::post('/transaction/cancel', [TransactionController::class, 'cancel']);
     Route::post('/transfer', [TransactionController::class, 'transfer']);
 });

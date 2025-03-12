@@ -11,11 +11,12 @@ class Transaction extends Model
 
     protected $fillable = [
         'serial',
-        'sender',
-        'receiver',
+        'sender_wallet',
+        'receiver_wallet',
         'date',
         'amount',
-        'state_id'
+        'state_id',
+        'user_id',
     ];
 
     public function state()
@@ -25,16 +26,16 @@ class Transaction extends Model
 
     public function sender()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Wallet::class, 'sender_wallet');
     }
 
     public function receiver()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Wallet::class, 'receiver_wallet');
     }
 
     public function admin()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasOne(User::class);
     }
 }
