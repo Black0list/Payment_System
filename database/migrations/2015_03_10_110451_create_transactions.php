@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->string('serial');
-            $table->foreignId('user_id')->constrained('users')->nullable();
-            $table->foreignId('sender_wallet')->constrained('wallets')->onDelete('cascade')->nullable();
-            $table->foreignId('receiver_wallet')->constrained('wallets')->onDelete('cascade')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('sender_wallet')->nullable()->constrained('wallets')->onDelete('cascade');
+            $table->foreignId('receiver_wallet')->nullable()->constrained('wallets')->onDelete('cascade');
             $table->dateTime('date');
             $table->decimal('amount');
             $table->foreignId('state_id')->constrained('states')->nullOnDelete()->cascadeOnUpdate();

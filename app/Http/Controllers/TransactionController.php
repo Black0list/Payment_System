@@ -132,10 +132,9 @@ class TransactionController extends Controller
     public function cancel(Request $request)
     {
         $data = $request->validate([
-            'state' => "required|string",
             'transaction' => "required|string|exists:transactions,id",
         ], [
-            'state.exists' => 'This State does not exist',
+            'transaction.exists' => 'This Transaction was not exist',
         ]);
 
         DB::beginTransaction();
@@ -147,7 +146,7 @@ class TransactionController extends Controller
                 return response()->json(['error' => 'Sender or Receiver wallet not found'], 404);
             }
 
-            $state = strtolower($data['state']);
+            $state = strtolower('cancelled');
             $stateModel = State::firstOrCreate(['name' => $state]);
 
             if ($transaction->state_id === $stateModel->id) {
@@ -159,6 +158,7 @@ class TransactionController extends Controller
 
             $transaction->sender->save();
             $transaction->receiver->save();
+            $transaction->user_id  = auth()->user()->id;
 
             $transaction->state_id = $stateModel->id;
             $transaction->save();
@@ -171,6 +171,44 @@ class TransactionController extends Controller
         }
     }
 
+    public function deposit(Request $request)
+    {
+        $data = $request->validate([
+            'amount' => 'required|numeric|min:1',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $user = auth()->user();
+
+            if (!$user->wallet) {
+                return response()->json(['error' => 'Wallet not found'], 404);
+            }
+
+            $user->wallet->amount += $data['amount'];
+            $user->wallet->save();
+
+            $state = State::firstOrCreate(['name' => 'deposit']);
+
+            Transaction::create([
+                'serial' => Str::random(10).$user->id ,
+                'amount' => $data['amount'],
+                'receiver_wallet' => $user->wallet->id,
+                'sender_wallet' => $user->wallet->id,
+                'state_id' => $state->id,
+                'date' => now(),
+                'user_id' => null,
+            ]);
+
+            DB::commit();
+
+            return response()->json(['message' => 'Deposit successful'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
 
 }
